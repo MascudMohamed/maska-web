@@ -57,26 +57,42 @@ window.addEventListener("scroll", function () {
 function handleSubmit(event) {
   event.preventDefault();
   const form = event.target;
-  const formData = new FormData(form);
-
-  // Simulate form submission
   const submitBtn = form.querySelector('button[type="submit"]');
   const originalText = submitBtn.innerHTML;
 
+  // Show loading state
   submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
   submitBtn.disabled = true;
 
-  setTimeout(() => {
-    submitBtn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
-    form.reset();
-
-    setTimeout(() => {
-      submitBtn.innerHTML = originalText;
-      submitBtn.disabled = false;
-    }, 2000);
-  }, 2000);
+  // Send data to Formspree
+  fetch(form.action, {
+    method: "POST",
+    body: new FormData(form),
+    headers: { Accept: "application/json" },
+  })
+    .then((response) => {
+      if (response.ok) {
+        submitBtn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
+        form.reset();
+      } else {
+        throw new Error("Failed to send");
+      }
+    })
+    .catch(() => {
+      submitBtn.innerHTML = '<i class="fas fa-times"></i> Error!';
+    })
+    .finally(() => {
+      setTimeout(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }, 2000);
+    });
 }
 
+// Attach the handler to your form
+document
+  .getElementById("contact-form")
+  .addEventListener("submit", handleSubmit);
 // Intersection Observer for animations
 const observerOptions = {
   threshold: 0.1,

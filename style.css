@@ -87,7 +87,7 @@ span.logo {
 }
 
 .nav-links a:hover {
-  color: var(--primary-color);
+  color: red;
 }
 
 .theme-toggle {
